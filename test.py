@@ -1,6 +1,6 @@
 import json
 import requests
-res = requests.get("http://api.open-notify.org/astros.json")
+res = requests.get("http://api.open-notify.org/astros.json").text
 data = json.loads(res)
 user_name = data['people']
 result[]

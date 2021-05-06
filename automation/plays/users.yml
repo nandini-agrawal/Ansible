@@ -1,0 +1,29 @@
+---
+- name: Create users
+  hosts: all
+  become: yes
+  gather_facts: true
+  vars_files:
+      - ./vars/user_list.yml
+      - ./secret.yml
+  tasks:
+    - name: create users on webserver
+      user:
+        name: "{{ item.username }}"
+        shell: /bin/bash
+        group: wheel
+        password: "{{ user_password | password_hash('sha512') }}"
+      loop: "{{ users }}"
+      when:
+        - inventory_hostname in groups['webservers']
+        - (item.uid | string)[0] | int == 1
+    - name: create user on dbservers
+      user:
+        name: "{{ item.username }}"
+        shell: /bin/bash
+        group: wheel
+        password: "{{user_password | password_hash('sha512') }}"
+      loop: "{{ users }}"
+      when:
+        - inventory_hostname in groups['database']
+        - (item.uid | string)[0] | int == 2 
